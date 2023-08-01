@@ -11,14 +11,19 @@ import kotlinx.coroutines.launch
 import model.BirdImage
 
 data class BirdsUiState(
-    val images : List<BirdImage> = emptyList()
-)
-class BirdsViewModel : ViewModel(){
+    val images: List<BirdImage> = emptyList(),
+    val selectedCategory: String? = null
+) {
+    val categories = images.map { it.category }.toSet()
+    val selectedImages = images.filter { it.category == selectedCategory }
+}
+
+class BirdsViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<BirdsUiState>(BirdsUiState())
     val uiState = _uiState.asStateFlow()
 
     private val httpClient = HttpClient {
-        install(ContentNegotiation){
+        install(ContentNegotiation) {
             json()
         }
     }
@@ -31,7 +36,13 @@ class BirdsViewModel : ViewModel(){
         httpClient.close()
     }
 
-    fun updateImages(){
+    fun selectedCategory(category: String) {
+        _uiState.update {
+            it.copy(selectedCategory = category)
+        }
+    }
+
+    fun updateImages() {
         viewModelScope.launch {
             val images = getImages()
             _uiState.update {
@@ -39,11 +50,11 @@ class BirdsViewModel : ViewModel(){
             }
         }
     }
-    private suspend fun getImages(): List<BirdImage>{
+
+    private suspend fun getImages(): List<BirdImage> {
         val images = httpClient
             .get("https://sebastianaigner.github.io/demo-image-api/pictures.json")
             .body<List<BirdImage>>()
-
         return images
     }
 }

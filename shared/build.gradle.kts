@@ -7,7 +7,7 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
+    android()
 
     iosX64()
     iosArm64()
@@ -39,8 +39,8 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:2.3.1")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-                api("dev.icerock.moko:mvvm-core:0.16.1")
-                api("dev.icerock.moko:mvvm-compose:0.16.1")
+                api("dev.icerock.moko:mvvm-core:0.16.1") // only ViewModel, EventsDispatcher, Dispatchers.UI
+                api("dev.icerock.moko:mvvm-compose:0.16.1") // api mvvm-core, getViewModel for Compose Multiplatfrom
             }
         }
         val androidMain by getting {
@@ -59,6 +59,7 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+
             dependencies {
                 implementation("io.ktor:ktor-client-darwin:2.3.1")
             }
